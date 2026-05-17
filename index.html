@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Nativo - medbasha</title>
+    <!-- Vinculación del manifiesto PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
+    <style>
+        :root {
+            --custom-gray: #707070; 
+            --bg-dark: #1e1e1e;
+            --bg-light: #f5f7fa;
+            --card-user: #2d2d2d;
+            --card-native: #e3f2fd;
+            --text-main: #333333;
+            --success-green: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        header h1 {
+            color: var(--bg-dark);
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        header p {
+            color: var(--custom-gray);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Selector de Idiomas Minimalista con Banderas */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .lang-btn {
+            background: none;
+            border: 2px solid transparent;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-btn.active {
+            border-color: #4285f4;
+            transform: scale(1.2);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            border: 1px solid rgba(112, 112, 112, 0.15);
+        }
+
+        /* Dirección de la traducción */
+        .direction-badge {
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* Bloques de Tarjetas */
+        .card-user {
+            background-color: var(--card-user);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+
+        .transcript-display {
+            font-size: 20px;
+            line-height: 1.5;
+            min-height: 60px;
+            margin-bottom: 15px;
+        }
+
+        /* Controles de Grabación de Doble Dirección */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-record {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease, opacity 0.3s;
+            color: white;
+        }
+
+        .btn-me {
+            background: linear-gradient(135deg, #4285f4, #2b6cb0);
+        }
+
+        .btn-client {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+        }
+
+        .btn-record:active {
+            transform: scale(0.98);
+        }
+
+        .btn-record.recording {
+            background: linear-gradient(135deg, #ea4335, #c53030) !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Bloque Traducido */
+        .card-native {
+            background-color: var(--card-native);
+            color: #0d47a1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-left: 5px solid #1e88e5;
+        }
+
+        .card-native .card-label {
+            color: #1e88e5;
+        }
+
+        .native-text-display {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--bg-dark);
+        }
+
+        .btn-listen {
+            background: white;
+            color: #1e88e5;
+            border: 2px solid #1e88e5;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-listen:hover {
+            background: #1e88e5;
+            color: white;
+        }
+
+        /* Sello Personal en el pie */
+        footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: var(--custom-gray);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🗣️ Eco Nativo</h1>
+        <p>Traductor de Ruta Multifunción</p>
+    </header>
+
+    <!-- Selector de Idiomas del Cliente -->
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="setLanguage('en', '🇬🇧')" title="Inglés">🇬🇧</button>
+        <button class="lang-btn" onclick="setLanguage('fr', '🇫🇷')" title="Francés">🇫🇷</button>
+        <button class="lang-btn" onclick="setLanguage('de', '🇩🇪')" title="Alemán">🇩🇪</button>
+    </div>
+
+    <div class="app-container">
+        <div class="direction-badge" id="directionBadge">Conductor (ES) ➔ Cliente (EN)</div>
+        
+        <!-- ENTRADA DE VOZ DETECTADA -->
+        <div class="card-user">
+            <div class="card-label" id="inputLabel">Escuchando en Español:</div>
+            <div class="transcript-display" id="transcript">Selecciona quién habla abajo para comenzar...</div>
+            
+            <div class="action-buttons">
+                <button class="btn-record btn-me" id="btnRecordMe">
+                    <span>🎙️</span> <span id="textMe">Hablar Yo (Español)</span>
+                </button>
+                <button class="btn-record btn-client" id="btnRecordClient">
+                    <span>🗣️</span> <span id="textClient">Habla Cliente (Inglés)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULTADO DE TRADUCCIÓN -->
+        <div class="card-native" id="cardNative">
+            <div class="card-label" id="outputLabel">Traducción (Inglés):</div>
+            <div class="native-text-display" id="nativeText">...</div>
+            
+            <button class="btn-listen" id="btnListen">
+                🔊 Escuchar Voz Remota
+            </button>
+        </div>
+    </div>
+
+    <!-- Sello Solicitado -->
+    <footer>medbasha</footer>
+
+    <script>
+        // Configuración de Idiomas
+        let currentTargetLang = 'en';
+        let currentTargetFlag = '🇬🇧';
+        let currentSpeaker = 'me'; // 'me' = conductor, 'client' = pasajero
+
+        const langNames = { 'en': 'Inglés', 'fr': 'Francés', 'de': 'Alemán', 'es': 'Español' };
+
+        // Registro de PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito'))
+                    .catch(err => console.error('Error al registrar Service Worker', err));
+            });
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const synth = window.speechSynthesis;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+        const btnRecordMe = document.getElementById('btnRecordMe');
+        const btnRecordClient = document.getElementById('btnRecordClient');
+        const transcriptDisplay = document.getElementById('transcript');
+        const cardNative = document.getElementById('cardNative');
+        const nativeText = document.getElementById('nativeText');
+        const btnListen = document.getElementById('btnListen');
+        const directionBadge = document.getElementById('directionBadge');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+
+        let isRecording = false;
+        let textToSpeak = "";
+        let speechLangTarget = "en-US";
+
+        function setLanguage(lang, flag) {
+            if(isRecording) return;
+            currentTargetLang = lang;
+            currentTargetFlag = flag;
+            
+            // Actualizar interfaz visual de botones
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === flag) btn.classList.add('active');
+            });
+
+            document.getElementById('textClient').innerText = `Habla Cliente (${langNames[lang]})`;
+            actualizarDireccion();
+        }
+
+        function actualizarDireccion() {
+            if (currentSpeaker === 'me') {
+                directionBadge.innerText = `Conductor (ES) ➔ Cliente (${currentTargetLang.toUpperCase()})`;
+                inputLabel.innerText = "Escuchando en Español:";
+                outputLabel.innerText = `Traducción (${langNames[currentTargetLang]}):`;
+            } else {
+                directionBadge.innerText = `Cliente (${currentTargetLang.toUpperCase()}) ➔ Conductor (ES)`;
+                inputLabel.innerText = `Escuchando en ${langNames[currentTargetLang]}:`;
+                outputLabel.innerText = "Traducción (Español):";
+            }
+        }
+
+        function iniciarGrabacion(speaker) {
+            if (!recognition) {
+                alert("Reconocimiento de voz no soportado.");
+                return;
+            }
+            
+            currentSpeaker = speaker;
+            isRecording = true;
+            actualizarDireccion();
+            cardNative.style.display = "none";
+
+            if (currentSpeaker === 'me') {
+                recognition.lang = 'es-ES';
+                btnRecordMe.classList.add('recording');
+                document.getElementById('textMe').innerText = "Escuchando...";
+                btnRecordClient.style.opacity = "0.4";
+            } else {
+                recognition.lang = currentTargetLang === 'en' ? 'en-US' : currentTargetLang === 'fr' ? 'fr-FR' : 'de-DE';
+                btnRecordClient.classList.add('recording');
+                document.getElementById('textClient').innerText = "Escuchando...";
+                btnRecordMe.style.opacity = "0.4";
+            }
+
+            transcriptDisplay.innerText = "Habla ahora...";
+            recognition.start();
+        }
+
+        if (recognition) {
+            btnRecordMe.addEventListener('click', () => {
+                if (!isRecording) iniciarGrabacion('me');
+                else recognition.stop();
+            });
+
+            btnRecordClient.addEventListener('click', () => {
+                if (!isRecording) iniciarGrabacion('client');
+                else recognition.stop();
+            });
+
+            recognition.onend = () => {
+                isRecording = false;
+                btnRecordMe.classList.remove('recording');
+                btnRecordClient.classList.remove('recording');
+                document.getElementById('textMe').innerText = "Hablar Yo (Español)";
+                document.getElementById('textClient').innerText = `Habla Cliente (${langNames[currentTargetLang]})`;
+                btnRecordMe.style.opacity = "1";
+                btnRecordClient.style.opacity = "1";
+            };
+
+            recognition.onresult = async (event) => {
+                const textResult = event.results[0][0].transcript;
+                transcriptDisplay.innerText = textResult;
+                
+                // Definir origen y destino de traducción
+                let from = currentSpeaker === 'me' ? 'es' : currentTargetLang;
+                let to = currentSpeaker === 'me' ? currentTargetLang : 'es';
+
+                transcriptDisplay.innerText = textResult + " (Traduciendo...)";
+
+                try {
+                    // Consumo de API de traducción libre y abierta
+                    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textResult)}&langpair=${from}|${to}`);
+                    const data = await res.json();
+                    const traduccion = data.responseData.translatedText;
+
+                    nativeText.innerText = traduccion;
+                    textToSpeak = traduccion;
+                    speechLangTarget = to === 'es' ? 'es-ES' : to === 'en' ? 'en-US' : to === 'fr' ? 'fr-FR' : 'de-DE';
+                    
+                    cardNative.style.display = "block";
+                    
+                    // Reproducción automática para agilizar en el bus
+                    reproducirVoz();
+
+                } catch (err) {
+                    console.error(err);
+                    transcriptDisplay.innerText = textResult + " (Error en red de traducción)";
+                }
+            };
+        }
+
+        function reproducirVoz() {
+            if (!textToSpeak) return;
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            const voces = synth.getVoices();
+            const vozCorrecta = voces.find(v => v.lang.startsWith(speechLangTarget));
+            if (vozCorrecta) utterance.voice = vozCorrecta;
+            utterance.rate = 0.95;
+            synth.speak(utterance);
+        }
+
+        btnListen.addEventListener('click', reproducirVoz);
+
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = synth.getVoices;
+        }
+    </script>
+</body>
+</html>
